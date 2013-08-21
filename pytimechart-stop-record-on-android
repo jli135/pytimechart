@@ -1,0 +1,7 @@
+#!/bin/sh
+cd /sys/kernel/debug/tracing
+echo >set_event
+echo 0 >tracing_enabled
+output=/sdcard/Download/trace`date +%y-%m-%d-%H-%M-%S`.txt
+cat trace > $output
+echo trace written to $output

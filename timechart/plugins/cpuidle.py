@@ -28,7 +28,7 @@ cpufreq_bg		#ffddee
 """
     additional_ftrace_parsers = [
         ('power_start',   'type=%d state=%d', 'type','state'),
-        ('power_frequency',   'type=%d state=%d', 'type','state'),
+        ('power_frequency',   'type=%d state=%d cpu_id=%d', 'type','state','cpuid'),
         #('power_end', 'nothing interesting to parse'),
         ('cpu_idle',  'state=%d cpu_id=%d', 'state', 'cpuid'),
         ('cpu_frequency',  'state=%d cpu_id=%d', 'state', 'cpuid'),
@@ -82,23 +82,26 @@ cpufreq_bg		#ffddee
     # legacy event support
     @staticmethod
     def do_event_power_start(self,event):
-        event.cpuid = event.common_cpu
-        if event.type==1:# c_state
-            cpu_idle.start_cpu_idle(self, event)
+        #event.cpuid = event.common_cpu
+        #if event.type==1:# c_state
+        #    cpu_idle.start_cpu_idle(self, event)
+        return
 
 
     @staticmethod
     def do_event_power_end(self,event):
-        event.cpuid = event.common_cpu
-        cpu_idle.stop_cpu_idle(self, event)
+        #event.cpuid = event.common_cpu
+        #cpu_idle.stop_cpu_idle(self, event)
+        return
     @staticmethod
     def do_all_events(self,event):
-        event.cpuid = event.common_cpu
-        cpu_idle.stop_cpu_idle(self, event)
+        #event.cpuid = event.common_cpu
+        #cpu_idle.stop_cpu_idle(self, event)
+        return
 
     @staticmethod
     def do_event_cpu_frequency(self,event):
-        self.ensure_cpu_allocated(event.common_cpu)
+        self.ensure_cpu_allocated(event.cpuid)
         tc = self.tmp_p_states[event.cpuid]
         if len(tc['types']) > 0:
             name = tc['types'][-1]
@@ -112,7 +115,7 @@ cpufreq_bg		#ffddee
     @staticmethod
     def do_event_power_frequency(self,event):
         if event.type==2:# p_state
-            event.cpuid = event.common_cpu
+            #event.cpuid = event.common_cpu
             cpu_idle.do_event_cpu_frequency(self, event)
 
 plugin_register(cpu_idle)
